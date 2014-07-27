@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.jsoup.Jsoup;
@@ -24,22 +25,12 @@ public class Main {
 		for (Element table : doc.select("table")) {
 			for (Element row : table.select("tr")) {
 				Elements tds = row.select("td");
-				if (tds.size() > 6) {
+				if (tds.size() == 13) {
 					UniversityCollection.add(process(tds));
 				}
 			}
 		}
-		PrintWriter writer;
-		Iterator<University> it = UniversityCollection.iterator();
-		try {
-			writer = new PrintWriter("Output.txt", "UTF-16");
-			while (it.hasNext())
-				writer.write(it.next().toString() + "\n");
-			writer.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+		getListOfBestEducationSystem(UniversityCollection);
 	}
 
 	public static University process(List<Element> tds) {
@@ -65,4 +56,61 @@ public class Main {
 				Publications, Influence, Citations, BroadImpact, Patents, Score);
 
 	}
+
+	public static void WriteToFile(ArrayList<University> UniversityCollection) {
+		PrintWriter writer;
+		Iterator<University> it = UniversityCollection.iterator();
+		try {
+			writer = new PrintWriter("Output.txt", "UTF-16");
+			while (it.hasNext())
+				writer.write(it.next().toString() + "\n");
+			writer.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void getListOfBestEducationSystem(
+			ArrayList<University> UniversityCollection) {
+		ArrayList<Country> CountryCollection = new ArrayList<Country>();
+		Iterator<University> it = UniversityCollection.iterator();
+		University temp;
+		while (it.hasNext()) {
+			temp = it.next();
+			if (getIndex(CountryCollection, temp.getCountry()) == -1)
+				CountryCollection.add(new Country(temp.getCountry(), 1));
+			else
+
+				CountryCollection
+						.get(getIndex(CountryCollection, temp.getCountry()))
+						.setNumber(
+								CountryCollection.get(
+										getIndex(CountryCollection,
+												temp.getCountry())).getNumber() + 1);
+		}
+		Collections.sort(CountryCollection);
+
+		Iterator<Country> itx = CountryCollection.iterator();
+		while (itx.hasNext())
+			System.out.println(itx.next());
+	}
+
+	public static int getIndex(ArrayList<Country> CountryCollection, String Name) {
+		Iterator<Country> it = CountryCollection.iterator();
+		int index = 0;
+		while (it.hasNext()) {
+			if (it.next().getName().equals(Name))
+				return index;
+			else
+				index++;
+		}
+		return -1;
+	}
+
+	public static void sortCountryByNumber(ArrayList<Country> CountryCollection) {
+		Iterator<Country> it = CountryCollection.iterator();
+		while (it.hasNext()) {
+		}
+	}
+
 }
